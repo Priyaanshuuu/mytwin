@@ -24,6 +24,7 @@ model DocumentChunk {
   id         String            @id @default(cuid())
   content    String
   section    String?
+  embedding  Unsupported("vector(1536)")?
   documentId String
   document   KnowledgeDocument @relation(fields: [documentId], references: [id], onDelete: Cascade)
   createdAt  DateTime          @default(now())

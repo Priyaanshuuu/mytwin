@@ -1,3 +1,5 @@
+import { prisma } from '../lib/prisma';
+
 export type Source = {
   documentId: string;
   title: string;
@@ -9,10 +11,42 @@ export type RetrievedContext = {
   source: Source;
 };
 
-export async function retrieveContext(
-  query: string
-): Promise<RetrievedContext[]> {
-  console.log('Retrieving context for:', query);
+async function embed(text: string): Promise<number[]> {
+  const apiKey = process.env.OPENAI_API_KEY;
+  if (!apiKey) throw new Error('OPENAI_API_KEY is not set');
 
-  return [];
+  const res = await fetch('https://api.openai.com/v1/embeddings', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${apiKey}` },
+    body: JSON.stringify({ model: 'text-embedding-3-small', input: text }),
+  });
+
+  if (!res.ok) throw new Error(`Embedding API error: ${res.status}`);
+  const data = await res.json();
+  return data.data[0].embedding as number[];
+}
+
+export async function retrieveContext(query: string, topK = 5): Promise<RetrievedContext[]> {
+  const vector = await embed(query);
+  const vectorLiteral = `[${vector.join(',')}]`;
+
+  const rows = await prisma.$queryRaw<
+    Array<{ id: string; content: string; section: string | null; documentId: string; title: string }>
+  >`
+    SELECT dc.id, dc.content, dc.section, dc."documentId", kd.title
+    FROM "DocumentChunk" dc
+    JOIN "KnowledgeDocument" kd ON kd.id = dc."documentId"
+    WHERE dc.embedding IS NOT NULL
+    ORDER BY dc.embedding <=> ${vectorLiteral}::vector
+    LIMIT ${topK}
+  `;
+
+  return rows.map((row: { id: string; content: string; section: string | null; documentId: string; title: string }) => ({
+    content: row.content,
+    source: {
+      documentId: row.documentId,
+      title: row.title,
+      section: row.section ?? undefined,
+    },
+  }));
 }
