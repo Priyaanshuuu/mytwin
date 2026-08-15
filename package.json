@@ -11,23 +11,27 @@
   "dependencies": {
     "@livekit/agents": "^1.6.4",
     "@livekit/components-react": "^2.9.24",
+    "@prisma/adapter-pg": "^7.9.1",
     "@prisma/client": "^7.9.1",
+    "dotenv": "^17.4.2",
     "livekit-client": "^2.21.0",
     "livekit-server-sdk": "^2.17.0",
     "next": "^16.3.1",
-    "prisma": "^7.9.1",
+    "pg": "^8.23.0",
     "react": "^19.2.8",
-    "react-dom": "^19.2.8",
-    "tsx": "^4.23.12"
+    "react-dom": "^19.2.8"
   },
   "devDependencies": {
     "@tailwindcss/postcss": "^4",
     "@types/node": "^20.19.43",
+    "@types/pg": "^8.21.0",
     "@types/react": "^19.2.18",
     "@types/react-dom": "^19.2.4",
     "eslint": "^9",
     "eslint-config-next": "16.3.1",
+    "prisma": "^7.9.1",
     "tailwindcss": "^4",
+    "tsx": "^4.23.12",
     "typescript": "^5.9.3"
   }
 }
