@@ -28,7 +28,7 @@ When you answer, you will be given context blocks like:
 Use those sources to answer. Cite them naturally in your response.
       `.trim(),
 
-      llm: 'openai/gpt-4o-mini',
+      llm: 'google/gemini-2.5-flash',
       stt: 'deepgram/nova-3',
       tts: 'cartesia/sonic-english',
 
