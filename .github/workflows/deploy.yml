@@ -1,28 +1,23 @@
-name: Deploy LiveKit Agent
-
+name: Deploy agent
 on:
-  workflow_dispatch:
-
   push:
     branches:
-      - master
+      - main
     paths:
       - 'voice-agent/**'
 
 jobs:
   deploy:
     runs-on: ubuntu-latest
-
     concurrency:
       group: deploy-${{ github.ref_name }}
       cancel-in-progress: true
 
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
+      - uses: actions/checkout@v4
 
       - name: Deploy LiveKit Cloud agent
-        uses: livekit/deploy-action@v2.12.1
+        uses: livekit/deploy-action@v2
         env:
           LIVEKIT_URL: ${{ secrets.LIVEKIT_URL }}
           LIVEKIT_API_KEY: ${{ secrets.LIVEKIT_API_KEY }}
