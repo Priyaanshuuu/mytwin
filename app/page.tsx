@@ -91,6 +91,7 @@ function VoiceUI({ onDisconnect }: { onDisconnect: () => void }) {
   const { state, audioTrack, agentTranscriptions } = useVoiceAssistant();
   const [userTranscript, setUserTranscript] = useState('');
   const [citations, setCitations] = useState<Source[]>([]);
+  const [agentResponse, setAgentResponse] = useState('');
 
   useDataChannel('lk-chat-topic', (msg) => {
     try {
@@ -98,17 +99,19 @@ function VoiceUI({ onDisconnect }: { onDisconnect: () => void }) {
       const parsed = JSON.parse(text);
       if (parsed.type === 'citations' && Array.isArray(parsed.citations)) {
         setCitations(parsed.citations);
+      } else if (parsed.type === 'agent_response' && typeof parsed.text === 'string') {
+        setAgentResponse(parsed.text);
       }
     } catch {
       // ignore non-JSON messages
     }
   });
 
+  // Show both interim and final transcriptions, or fall back to agent response
   const agentText = agentTranscriptions
-    .filter((t) => t.final)
     .map((t) => t.text)
     .join(' ')
-    .trim();
+    .trim() || agentResponse;
 
   const stateLabel: Record<string, string> = {
     disconnected: 'Disconnected',

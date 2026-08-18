@@ -2,12 +2,13 @@
   "name": "mytwin",
   "version": "0.1.0",
   "private": true,
+  "type": "module",
   "scripts": {
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
     "lint": "eslint",
-    "type": "module"
+    "agent": "dotenv -e .env -- tsx agent/agent.ts dev"
   },
   "dependencies": {
     "@livekit/agents": "^1.6.4",

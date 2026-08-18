@@ -3,6 +3,7 @@ import {
   defineAgent,
   voice,
   WorkerOptions,
+  ChatMessage,
 } from '@livekit/agents';
 import { retrieveContext } from './rag';
 
@@ -25,17 +26,14 @@ When you answer, you will be given context blocks like:
 [SOURCE: <title> | <section>]
 <content>
 
-Use those sources to answer. Cite them naturally in your response.
-      `.trim(),
+Use those sources to answer. Cite them naturally in your response.`.trim(),
 
       llm: 'google/gemini-2.5-flash',
       stt: 'deepgram/nova-3',
-      tts: 'cartesia/sonic-english',
+      tts: 'deepgram/aura-2',
 
       onUserTurnCompleted: async (agentCtx, chatCtx, newMessage) => {
-        const userText = newMessage.content
-          .filter((c): c is string => typeof c === 'string')
-          .join(' ');
+        const userText = newMessage.textContent ?? '';
 
         if (!userText.trim()) return;
 
@@ -64,9 +62,26 @@ Use those sources to answer. Cite them naturally in your response.
         const citations = retrieved.map((r) => r.source);
         await ctx.room.localParticipant?.publishData(
           Buffer.from(JSON.stringify({ type: 'citations', citations })),
-          { reliable: true }
+          { reliable: true, topic: 'lk-chat-topic' }
         );
       },
+    });
+
+    session.on(voice.AgentSessionEventTypes.ConversationItemAdded, async (event) => {
+      const item = event.item;
+
+      if (!(item instanceof ChatMessage) || item.role !== 'assistant') return;
+
+      const agentText = (item.textContent ?? '').trim();
+
+      if (agentText) {
+        console.log('Agent completed response:', agentText);
+
+        await ctx.room.localParticipant?.publishData(
+          Buffer.from(JSON.stringify({ type: 'agent_response', text: agentText })),
+          { reliable: true, topic: 'lk-chat-topic' }
+        );
+      }
     });
 
     await session.start({
@@ -75,6 +90,8 @@ Use those sources to answer. Cite them naturally in your response.
     });
   },
 });
+
+export default agent;
 
 cli.runApp(
   new WorkerOptions({
