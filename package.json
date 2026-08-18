@@ -8,7 +8,8 @@
     "build": "next build",
     "start": "next start",
     "lint": "eslint",
-    "agent": "dotenv -e .env -- tsx agent/agent.ts dev"
+    "agent": "dotenv -e .env -- tsx agent/agent.ts dev",
+    "agent:start": "tsx agent/agent.ts start"
   },
   "dependencies": {
     "@livekit/agents": "^1.6.4",
