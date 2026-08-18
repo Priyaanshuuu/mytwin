@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import React from "react";
-import { Geist, Geist_Mono } from "next/font/google";
+import { Geist, Geist_Mono, Alfa_Slab_One } from "next/font/google";
 import "./globals.css";
 
 const geistSans = Geist({
@@ -13,6 +13,12 @@ const geistMono = Geist_Mono({
   subsets: ["latin"],
 });
 
+const alfaSlabOne = Alfa_Slab_One({
+  weight: "400",
+  variable: "--font-alfa-slab",
+  subsets: ["latin"],
+});
+
 export const metadata: Metadata = {
   title: "Digital Twin",
   description: "Voice based Twin!!",
@@ -22,7 +28,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   return (
     <html
       lang="en"
-      className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
+      className={`${geistSans.variable} ${geistMono.variable} ${alfaSlabOne.variable} h-full antialiased`}
     >
       <body className="min-h-full flex flex-col">{children}</body>
     </html>
