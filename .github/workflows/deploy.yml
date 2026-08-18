@@ -1,6 +1,8 @@
 name: Deploy LiveKit Agent
 
 on:
+  workflow_dispatch:
+
   push:
     branches:
       - master
